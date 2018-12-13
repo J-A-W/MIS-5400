@@ -17,5 +17,5 @@ RelationshipSatisfaction: 1 'Low' 2 'Medium' 3 'High' 4 'Very High'
 WorkLifeBalance: 1 'Bad' 2 'Good' 3 'Better' 4 'Best'
 
 
-### VIEW MY DATA HERE:
+### VIEW MY PROJECT HERE:
 http://nbviewer.jupyter.org/github/J-A-W/MIS-5400/blob/master/JW_IBM_HR_DATA.html
