@@ -1,0 +1,154 @@
+
+# coding: utf-8
+
+# # JUSTIN WRIGHT: IBM HR ATTRITION DATA
+# 
+# This is a data set created by IBM data scientists using fictional employee data to predict attrition.
+# 
+# Data fields include various pieces of employee information. For example, Age, Attrition, Department, DistanceFromHome, Education, JobSatisfaction, MaritalStatus, MonthlyIncome, WorkLifeBalance, YearsAtCompany, etc.
+# 
+# Clarification on some data field classifications: 
+# Education: 1 'Below College' 2 'College' 3 'Bachelor' 4 'Master' 5 'Doctor' 
+# EnvironmentSatisfaction: 1 'Low' 2 'Medium' 3 'High' 4 'Very High' 
+# JobInvolvement: 1 'Low' 2 'Medium' 3 'High' 4 'Very High' 
+# JobSatisfaction: 1 'Low' 2 'Medium' 3 'High' 4 'Very High' 
+# PerformanceRating: 1 'Low' 2 'Good' 3 'Excellent' 4 'Outstanding' 
+# RelationshipSatisfaction: 1 'Low' 2 'Medium' 3 'High' 4 'Very High' 
+# WorkLifeBalance: 1 'Bad' 2 'Good' 3 'Better' 4 'Best'
+# 
+
+# In[14]:
+
+
+#CALL LIBRARIES
+import psycopg2
+import numpy as np
+import pandas as pd
+import pandas.io.sql as sqlio
+import matplotlib.pyplot as plt
+import seaborn as sns
+import warnings    # We want to suppress warnings
+import os
+
+
+# In[15]:
+
+
+try:
+    conn = psycopg2.connect(host = "localhost", database = "postgres", user = "postgres", password = "mis5400")
+    print(conn)
+    cur = conn.cursor()
+    print(cur)
+except exception as e:
+    print(e)    
+sql = 'SELECT * FROM PUBLIC."ibm_hr_data"'
+data = sqlio.read_sql_query(sql, conn)
+
+
+# 
+# ### Examine and Understand Data
+# 
+# Basic functions to understand what the data we're looking at is all about
+# 
+
+# In[16]:
+
+
+data.info()
+data.head(10)
+
+
+# 
+# #### Unique Values
+# 
+# This helps to simply understand the number of unique values we are dealing with
+# 
+
+# In[17]:
+
+
+Nunique = data.nunique()
+Nunique = Nunique.sort_values()
+Nunique
+
+
+# 
+# ## Data Visualization
+# 
+# Some basic visualization tools to help us understand the distribution and begin to identify trends in the data
+# 
+
+# In[19]:
+
+
+# Seaborn Color Pallate
+sns.palplot(sns.color_palette("hls", 8))
+plt.show()
+
+
+# In[21]:
+
+
+# Age Distribution
+
+sns.distplot(data['age'])
+plt.show()
+
+
+# In[27]:
+
+
+# Display Multiple Distribution Plots
+
+fig,ax = plt.subplots(3,3, figsize=(10,10))               # 'ax' has references to all the four axes
+sns.distplot(data['totalworkingyears'], ax = ax[0,0]) 
+sns.distplot(data['yearsatcompany'], ax = ax[0,1]) 
+sns.distplot(data['distancefromhome'], ax = ax[0,2]) 
+sns.distplot(data['yearsincurrentrole'], ax = ax[1,0]) 
+sns.distplot(data['yearswithcurrmanager'], ax = ax[1,1]) 
+sns.distplot(data['yearssincelastpromotion'], ax = ax[1,2]) 
+sns.distplot(data['percentsalaryhike'], ax = ax[2,0]) 
+sns.distplot(data['yearssincelastpromotion'], ax = ax[2,1]) 
+sns.distplot(data['trainingtimeslastyear'], ax = ax[2,2]) 
+plt.show()
+
+
+# In[28]:
+
+
+# Multiple Plot Counts
+    # These plots help us see the counts of individuals, if they were terminated or not
+
+total_records= len(data)
+columns = ["gender","maritalstatus","worklifebalance","environmentsatisfaction","jobsatisfaction",
+           "joblevel","businesstravel","department"]
+plt.figure(figsize=(12,8))
+j=0
+for i in columns:
+    j +=1
+    plt.subplot(4,2,j)
+    #sns.countplot(data[i])
+    ax1 = sns.countplot(data=data,x= i,hue="attrition")
+    if(j==8 or j== 7):
+        plt.xticks( rotation=90)
+    for p in ax1.patches:
+        height = p.get_height()
+        ax1.text(p.get_x()+p.get_width()/2.,
+                height + 3,
+                '{:1.2f}'.format(height/total_records,0),
+                ha="center",rotation=0) 
+
+# Custom the subplot layout
+plt.subplots_adjust(bottom=-0.9, top=2)
+plt.show()
+
+
+# 
+# ## Initial Observations
+# 
+# 1. Single attrition rate is nearly half in maritalstatus
+# 2. joblevel—1  attrition rate is also high compared to other job levels
+# 3. environmentsatisfaction—1 has high attrition rate
+# 4. Attrition rates are high in the following attributes: 
+#     male | jobsatisfaction—1 | sales
+#     
