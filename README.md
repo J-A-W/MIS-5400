@@ -6,8 +6,6 @@ Data fields include various pieces of employee information. For example, Age, At
 Education, JobSatisfaction, MaritalStatus, MonthlyIncome, WorkLifeBalance, YearsAtCompany, etc.
 
 There are 35 columns, 1471 rows for a total of 51485 pieces of data.
-All data types are strings. The data looks clean and shouldn't require too much scrubbing, I think the only struggle
-will be finding the factors that matter and filtering out those which do not.
 
 Clarification on some data field classifications:
 Education: 1 'Below College' 2 'College' 3 'Bachelor' 4 'Master' 5 'Doctor'
